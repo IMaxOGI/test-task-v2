@@ -1,22 +1,36 @@
-import { AnyRoute, createRoute } from '@tanstack/react-router';
+import { createRootRoute, createRoute, createRouter } from '@tanstack/react-router';
+import RootComponent from '../components/RootComponent';
 import { Login } from '../pages/Login';
 import { Home } from '../pages/Home';
 
-// Определение маршрутов
-const homeRoute = createRoute({
+const rootRoute = createRootRoute({
+  component: RootComponent,
+});
+
+const indexRoute = createRoute({
+  getParentRoute: () => rootRoute,
   path: '/',
   component: Home,
-  getParentRoute: function (): AnyRoute {
-    throw new Error('Function not implemented.');
-  },
 });
 
 const loginRoute = createRoute({
+  getParentRoute: () => rootRoute,
   path: '/login',
   component: Login,
-  getParentRoute: function (): AnyRoute {
-    throw new Error('Function not implemented.');
-  },
 });
 
-export const routeTree = homeRoute.addChildren([loginRoute]);
+const routeTree = rootRoute.addChildren([indexRoute, loginRoute]);
+
+const router = createRouter({
+  routeTree,
+  defaultPreload: 'intent',
+  defaultStaleTime: 5000,
+});
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
+}
+
+export { router };
