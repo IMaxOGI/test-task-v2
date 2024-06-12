@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
-import { authService } from '../services/AuthService';
+import { container } from 'tsyringe';
+import { AuthService } from '../services/AuthService';
 
 export const useAuth = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const authService = container.resolve(AuthService);
+  const [isAuthenticated, setIsAuthenticated] = useState(authService.getAuthState());
 
   useEffect(() => {
     const subscription = authService.isAuthenticated().subscribe(setIsAuthenticated);
     return () => subscription.unsubscribe();
-  }, []);
+  }, [authService]);
 
   return isAuthenticated;
 };

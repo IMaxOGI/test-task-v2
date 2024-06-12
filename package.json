@@ -19,6 +19,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.1",
+    "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "tsyringe": "^4.8.0",
     "vitest": "^1.6.0"

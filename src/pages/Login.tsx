@@ -1,13 +1,24 @@
 import React, { useState } from 'react';
-import { authService } from '../core/services/AuthService';
+import { container } from 'tsyringe';
+import { AuthService } from '../core/services/AuthService';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { useNavigate } from '@tanstack/react-router';
 
 export const Login: React.FC = () => {
+  const authService = container.resolve(AuthService);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleLogin = () => {
     authService.login(username, password);
+    if (authService.getAuthState()) {
+      setError(null);
+      navigate({ to: '/' }); // Перенаправление на главную страницу после успешного входа
+    } else {
+      setError('Invalid username or password');
+    }
   };
 
   return (
@@ -32,6 +43,7 @@ export const Login: React.FC = () => {
       >
         Login
       </button>
+      {error && <p className="text-red-500">{error}</p>}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger className="mt-4 text-gray-700 hover:text-gray-900">Options</DropdownMenu.Trigger>
         <DropdownMenu.Content className="bg-white shadow-lg rounded-md p-2">

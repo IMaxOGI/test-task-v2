@@ -1,12 +1,15 @@
+import { injectable } from 'tsyringe';
 import { BehaviorSubject } from 'rxjs';
 
-class AuthService {
+@injectable()
+export class AuthService {
   private authState = new BehaviorSubject<boolean>(false);
 
   login(username: string, password: string): void {
-    // Мокаем аутентификацию
     if (username === 'user' && password === 'password') {
       this.authState.next(true);
+    } else {
+      this.authState.next(false);
     }
   }
 
@@ -17,6 +20,8 @@ class AuthService {
   isAuthenticated() {
     return this.authState.asObservable();
   }
-}
 
-export const authService = new AuthService();
+  getAuthState(): boolean {
+    return this.authState.getValue();
+  }
+}
