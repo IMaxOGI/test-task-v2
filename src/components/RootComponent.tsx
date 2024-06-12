@@ -24,10 +24,8 @@ const RootComponent = () => {
               activeOptions={{ exact: true }}
               className="text-gray-700 hover:text-gray-900"
             >
-              {({ isActive }) => <span className={isActive ? 'font-bold' : ''}>Home</span>}
+              Home
             </Link>
-          </div>
-          <div className="flex items-center space-x-4">
             {!isAuthenticated ? (
               <Link
                 to="/login"

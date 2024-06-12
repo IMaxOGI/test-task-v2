@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["vitest/globals"],
     "target": "ES2020",
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
@@ -26,6 +27,6 @@
     "emitDecoratorMetadata": true,
     "outDir": "./dist"
   },
-  "include": ["src"],
+  "include": ["src", "vitest.config.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

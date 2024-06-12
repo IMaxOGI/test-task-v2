@@ -1,5 +1,5 @@
 import { injectable } from 'tsyringe';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @injectable()
 export class AuthService {
@@ -23,7 +23,7 @@ export class AuthService {
     this.authState.next(false);
   }
 
-  isAuthenticated() {
+  isAuthenticated(): Observable<boolean> {
     return this.authState.asObservable();
   }
 
