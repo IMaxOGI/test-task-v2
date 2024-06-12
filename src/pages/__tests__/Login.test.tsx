@@ -3,12 +3,11 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { container } from 'tsyringe';
 import { AuthService } from '../../core/services/AuthService';
-import { MemoryRouter } from 'react-router-dom';
+import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import React from 'react';
 import { Login } from '../Login';
 import { of } from 'rxjs';
 
-// Мокаем AuthService
 vi.mock('../../core/services/AuthService', () => {
   return {
     AuthService: vi.fn().mockImplementation(() => {
@@ -30,7 +29,15 @@ beforeEach(() => {
 });
 
 const renderWithRouter = (ui: React.ReactElement) => {
-  return render(<MemoryRouter>{ui}</MemoryRouter>);
+  const routes = [
+    {
+      path: '/',
+      element: ui,
+    },
+  ];
+  const router = createMemoryRouter(routes);
+
+  return render(<RouterProvider router={router} />);
 };
 
 test('renders login form', () => {

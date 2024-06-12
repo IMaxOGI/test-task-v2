@@ -4,11 +4,10 @@ import { useAuth } from '../useAuth';
 
 const TestComponent = () => {
   const isAuthenticated = useAuth();
-
   return <div>{isAuthenticated ? 'Authenticated' : 'Not Authenticated'}</div>;
 };
 
-vi.mock('../../core/hooks/useAuth', () => ({
+vi.mock('../useAuth', () => ({
   useAuth: vi.fn(),
 }));
 

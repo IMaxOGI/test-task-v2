@@ -4,12 +4,10 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { container } from 'tsyringe';
 import { AuthService } from '../../core/services/AuthService';
 import RootComponent from '../RootComponent';
-import { RouterProvider, createRouter, createRootRoute } from '@tanstack/react-router';
-import { MemoryRouter } from 'react-router-dom';
+import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import React from 'react';
 import { of } from 'rxjs';
 
-// Мокаем AuthService
 vi.mock('../../core/services/AuthService', () => {
   return {
     AuthService: vi.fn().mockImplementation(() => {
@@ -30,22 +28,16 @@ beforeEach(() => {
   container.clearInstances();
 });
 
-const rootRoute = createRootRoute({
-  component: RootComponent,
-});
-
-const router = createRouter({
-  routeTree: rootRoute.addChildren([]),
-  defaultPreload: 'intent',
-  defaultStaleTime: 5000,
-});
-
 const renderWithRouter = (ui: React.ReactElement) => {
-  return render(
-    <MemoryRouter>
-      <RouterProvider router={router}>{ui}</RouterProvider>
-    </MemoryRouter>,
-  );
+  const routes = [
+    {
+      path: '/',
+      element: ui,
+    },
+  ];
+  const router = createMemoryRouter(routes);
+
+  return render(<RouterProvider router={router} />);
 };
 
 test('renders Home link and Login link when not authenticated', () => {
