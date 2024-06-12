@@ -22,7 +22,7 @@ export default {
     project: ['./tsconfig.json', './tsconfig.node.json'],
     tsconfigRootDir: __dirname,
   },
-}
+};
 ```
 
 - Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
@@ -57,17 +57,35 @@ The project is structured as follows:
 To run the project locally, use the following commands:
 
 1. Install dependencies:
+
    ```sh
    npm install
+
+   ```
 
 2. Start the development server:
    ```sh
    npm run dev
+   ```
 
 The application will be available at http://localhost:5173.
 
 ## Building the Project
 
 To create a production build, use the following command:
+
 ```sh
 npm run build
+```
+
+The build output will be located in the dist directory.
+
+## Testing
+
+To run tests, use the following command:
+
+```sh
+npm run test
+```
+
+Make sure to write tests for all new features and components to ensure the stability and reliability of the application.

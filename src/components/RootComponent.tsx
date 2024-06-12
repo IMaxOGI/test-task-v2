@@ -1,9 +1,18 @@
-import { Link, Outlet } from '@tanstack/react-router';
+import { Link, Outlet, useNavigate } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { useAuth } from '../core/hooks/useAuth';
+import { container } from 'tsyringe';
+import { AuthService } from '../core/services/AuthService';
 
 const RootComponent = () => {
   const isAuthenticated = useAuth();
+  const navigate = useNavigate();
+  const authService = container.resolve(AuthService);
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate({ to: '/login' });
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -15,23 +24,24 @@ const RootComponent = () => {
               activeOptions={{ exact: true }}
               className="text-gray-700 hover:text-gray-900"
             >
-              Home
+              {({ isActive }) => <span className={isActive ? 'font-bold' : ''}>Home</span>}
             </Link>
-            {!isAuthenticated && (
+          </div>
+          <div className="flex items-center space-x-4">
+            {!isAuthenticated ? (
               <Link
                 to="/login"
                 className="text-gray-700 hover:text-gray-900"
               >
                 {({ isActive }) => <span className={isActive ? 'font-bold' : ''}>Login</span>}
               </Link>
-            )}
-            {isAuthenticated && (
-              <Link
-                to="/logout"
+            ) : (
+              <button
+                onClick={handleLogout}
                 className="text-gray-700 hover:text-gray-900"
               >
                 Logout
-              </Link>
+              </button>
             )}
           </div>
         </div>

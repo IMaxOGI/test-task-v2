@@ -1,21 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { container } from 'tsyringe';
 import { AuthService } from '../core/services/AuthService';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useNavigate } from '@tanstack/react-router';
+import { useAuth } from '../core/hooks/useAuth';
 
 export const Login: React.FC = () => {
   const authService = container.resolve(AuthService);
+  const isAuthenticated = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate({ to: '/' });
+    }
+  }, [isAuthenticated, navigate]);
+
   const handleLogin = () => {
     authService.login(username, password);
     if (authService.getAuthState()) {
       setError(null);
-      navigate({ to: '/' }); // Перенаправление на главную страницу после успешного входа
+      navigate({ to: '/' });
     } else {
       setError('Invalid username or password');
     }

@@ -3,10 +3,15 @@ import { BehaviorSubject } from 'rxjs';
 
 @injectable()
 export class AuthService {
-  private authState = new BehaviorSubject<boolean>(false);
+  private authState = new BehaviorSubject<boolean>(this.hasSession());
+
+  private hasSession(): boolean {
+    return !!localStorage.getItem('auth');
+  }
 
   login(username: string, password: string): void {
     if (username === 'user' && password === 'password') {
+      localStorage.setItem('auth', 'true');
       this.authState.next(true);
     } else {
       this.authState.next(false);
@@ -14,6 +19,7 @@ export class AuthService {
   }
 
   logout(): void {
+    localStorage.removeItem('auth');
     this.authState.next(false);
   }
 
