@@ -1,67 +1,57 @@
 import React from 'react';
-import 'reflect-metadata';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { container } from 'tsyringe';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { useAuth } from '../../core/hooks/useAuth';
 import { Login } from '../Login';
-import { vi } from 'vitest';
-import { of } from 'rxjs';
 
-vi.mock('../core/hooks/useAuth', () => ({
-  useAuth: vi.fn(() => false),
+// Mock useAuth hook
+vi.mock('../../core/hooks/useAuth', () => ({
+  useAuth: vi.fn(),
 }));
 
-vi.mock('@tanstack/react-router', () => ({
-  useNavigate: () => vi.fn(),
-}));
-
+// Mock AuthService
 const mockAuthService = {
   login: vi.fn(),
+  getAuthState: vi.fn(),
   logout: vi.fn(),
-  isAuthenticated: vi.fn().mockReturnValue(of(false)),
-  getAuthState: vi.fn().mockReturnValue(false),
 };
 
 vi.mock('../../core/services/AuthService', () => ({
   AuthService: vi.fn().mockImplementation(() => mockAuthService),
 }));
 
+const renderWithRouter = (ui: React.ReactElement) => render(<MemoryRouter>{ui}</MemoryRouter>);
+
 beforeEach(() => {
   vi.clearAllMocks();
-  container.clearInstances();
 });
 
-const renderWithRouter = (ui: React.ReactElement) => {
-  return render(
-    <MemoryRouter initialEntries={['/login']}>
-      <Routes>
-        <Route
-          path="/login"
-          element={ui}
-        />
-      </Routes>
-    </MemoryRouter>,
-  );
-};
-
-test('renders login form', () => {
-  renderWithRouter(<Login />);
-  expect(screen.getByPlaceholderText('Username')).toBeInTheDocument();
-  expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
-  expect(screen.getByText('Login')).toBeInTheDocument();
-});
-
-test('shows error message on invalid credentials', async () => {
-  mockAuthService.login.mockImplementation(() => Promise.reject(new Error('Invalid credentials')));
-
-  renderWithRouter(<Login />);
-  fireEvent.change(screen.getByPlaceholderText('Username'), { target: { value: 'invalid' } });
-  fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'invalid' } });
-  fireEvent.click(screen.getByText('Login'));
-
-  await waitFor(() => {
-    expect(mockAuthService.login).toHaveBeenCalled();
+describe('Login', () => {
+  test('renders login form', () => {
+    (useAuth as ReturnType<typeof vi.fn>).mockReturnValue(false);
+    renderWithRouter(<Login />);
+    expect(screen.getByPlaceholderText('Username')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
+    expect(screen.getByText('Login')).toBeInTheDocument();
   });
 
-  expect(await screen.findByText('Invalid username or password')).toBeInTheDocument();
+  test('shows error message on invalid credentials', async () => {
+    (useAuth as ReturnType<typeof vi.fn>).mockReturnValue(false);
+    mockAuthService.login.mockRejectedValue(new Error('Invalid credentials'));
+    renderWithRouter(<Login />);
+    fireEvent.change(screen.getByPlaceholderText('Username'), { target: { value: 'invalid' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'invalid' } });
+    fireEvent.click(screen.getByText('Login'));
+    expect(await screen.findByText('Invalid username or password')).toBeInTheDocument();
+  });
+
+  test('calls login on login button click', async () => {
+    (useAuth as ReturnType<typeof vi.fn>).mockReturnValue(false);
+    renderWithRouter(<Login />);
+    fireEvent.change(screen.getByPlaceholderText('Username'), { target: { value: 'test' } });
+    fireEvent.change(screen.getByPlaceholderText('Password'), { target: { value: 'test' } });
+    fireEvent.click(screen.getByText('Login'));
+    expect(mockAuthService.login).toHaveBeenCalledWith('test', 'test');
+  });
 });

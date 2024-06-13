@@ -4,6 +4,8 @@ import { AuthService } from '../core/services/AuthService';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useNavigate } from '@tanstack/react-router';
 import { useAuth } from '../core/hooks/useAuth';
+import Input from '../shared/ui/Input';
+import Button from '../shared/ui/Button';
 
 export const Login: React.FC = () => {
   const authService = container.resolve(AuthService);
@@ -19,42 +21,31 @@ export const Login: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleLogin = async () => {
-    try {
-      await authService.login(username, password);
-      if (authService.getAuthState()) {
-        setError(null);
-        navigate({ to: '/' });
-      } else {
-        setError('Invalid username or password');
-      }
-    } catch (error) {
+  const handleLogin = () => {
+    authService.login(username, password);
+    if (authService.getAuthState()) {
+      setError(null);
+      navigate({ to: '/' });
+    } else {
       setError('Invalid username or password');
     }
   };
 
   return (
     <div className="flex flex-col items-center mt-5 space-y-4">
-      <input
+      <Input
         type="text"
         placeholder="Username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      <input
+      <Input
         type="password"
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      <button
-        onClick={handleLogin}
-        className="w-full max-w-md px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        Login
-      </button>
+      <Button onClick={handleLogin}>Login</Button>
       {error && <p className="text-red-500">{error}</p>}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger className="mt-4 text-gray-700 hover:text-gray-900">Options</DropdownMenu.Trigger>
