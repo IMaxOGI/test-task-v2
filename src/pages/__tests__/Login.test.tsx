@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { BrowserRouter } from 'react-router-dom';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useAuth } from '../../core/hooks/useAuth';
 import { Login } from '../Login';
 
@@ -21,14 +21,16 @@ vi.mock('../../core/services/AuthService', () => ({
   AuthService: vi.fn().mockImplementation(() => mockAuthService),
 }));
 
-const renderWithRouter = (ui: React.ReactElement) => render(<MemoryRouter>{ui}</MemoryRouter>);
+const renderWithRouter = (ui: React.ReactElement) => {
+  return render(<BrowserRouter>{ui}</BrowserRouter>);
+};
 
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
 describe('Login', () => {
-  test('renders login form', () => {
+  it('renders login form', () => {
     (useAuth as ReturnType<typeof vi.fn>).mockReturnValue(false);
     renderWithRouter(<Login />);
     expect(screen.getByPlaceholderText('Username')).toBeInTheDocument();
@@ -36,7 +38,7 @@ describe('Login', () => {
     expect(screen.getByText('Login')).toBeInTheDocument();
   });
 
-  test('shows error message on invalid credentials', async () => {
+  it('shows error message on invalid credentials', async () => {
     (useAuth as ReturnType<typeof vi.fn>).mockReturnValue(false);
     mockAuthService.login.mockRejectedValue(new Error('Invalid credentials'));
     renderWithRouter(<Login />);
@@ -46,7 +48,7 @@ describe('Login', () => {
     expect(await screen.findByText('Invalid username or password')).toBeInTheDocument();
   });
 
-  test('calls login on login button click', async () => {
+  it('calls login on login button click', async () => {
     (useAuth as ReturnType<typeof vi.fn>).mockReturnValue(false);
     renderWithRouter(<Login />);
     fireEvent.change(screen.getByPlaceholderText('Username'), { target: { value: 'test' } });

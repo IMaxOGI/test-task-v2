@@ -4,8 +4,8 @@ import { AuthService } from '../core/services/AuthService';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useNavigate } from '@tanstack/react-router';
 import { useAuth } from '../core/hooks/useAuth';
-import Input from '../shared/ui/Input';
 import Button from '../shared/ui/Button';
+import Input from '../shared/ui/Input';
 
 export const Login: React.FC = () => {
   const authService = container.resolve(AuthService);
@@ -21,12 +21,16 @@ export const Login: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleLogin = () => {
-    authService.login(username, password);
-    if (authService.getAuthState()) {
-      setError(null);
-      navigate({ to: '/' });
-    } else {
+  const handleLogin = async () => {
+    try {
+      await authService.login(username, password);
+      if (authService.getAuthState()) {
+        setError(null);
+        navigate({ to: '/' });
+      } else {
+        setError('Invalid username or password');
+      }
+    } catch (error) {
       setError('Invalid username or password');
     }
   };
