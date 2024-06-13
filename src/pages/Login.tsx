@@ -19,12 +19,16 @@ export const Login: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleLogin = () => {
-    authService.login(username, password);
-    if (authService.getAuthState()) {
-      setError(null);
-      navigate({ to: '/' });
-    } else {
+  const handleLogin = async () => {
+    try {
+      await authService.login(username, password);
+      if (authService.getAuthState()) {
+        setError(null);
+        navigate({ to: '/' });
+      } else {
+        setError('Invalid username or password');
+      }
+    } catch (error) {
       setError('Invalid username or password');
     }
   };

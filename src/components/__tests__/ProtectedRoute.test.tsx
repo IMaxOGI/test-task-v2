@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest'; // Правильный импорт для vitest
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useAuth } from '../../core/hooks/useAuth';
 import ProtectedRoute from '../ProtectedRoute';
 
